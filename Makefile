@@ -8,7 +8,7 @@
 OBS_PROJECT := EA4
 
 # the package name in OBS
-OBS_PACKAGE := ioncube56
+OBS_PACKAGE := scl-ioncube
 
 #-------------------------------------------------------------------------------------
 #
@@ -22,7 +22,7 @@ OBS_PACKAGE := ioncube56
 #
 #-------------------------------------------------------------------------------------
 # - Cleaning the OBS target when files are removed from git
-# - Add a obs_dependencies target to rebuild the package and all of it's dependencies
+# - Add a obs_dependencies target to rebuild the package and all of its dependencies
 # - Create a devel RPM that contains all of these Makefile stubs.  This way it's
 #   in one place, instead of being copied everywhere.
 #
@@ -75,15 +75,23 @@ clean: build-clean
 #	OSC_BUILD_OPTS='--define="runselftest 0"' make local
 local: check
 	make build-init
+	$(eval OBS_WORKDIR := $(BUILD_TARGET)/$(IONCUBE_TARGET))
 	cd OBS/$(OBS_WORKDIR) && osc build $(OSC_BUILD_OPTS) --clean --noverify --disable-debuginfo
 	make build-clean
 
 # Commits local file changes to OBS, and ensures a build is performed.
-obs: check
+obs: check ioncube54 ioncube55 ioncube56
+
+build-binary-target:
 	make build-init
+	$(eval OBS_WORKDIR := $(BUILD_TARGET)/$(IONCUBE_TARGET))
+	cat macros/$(IONCUBE_TARGET) SPECS/scl-ioncube.spec > OBS/$(OBS_WORKDIR)/scl-ioncube.spec
 	cd OBS/$(OBS_WORKDIR) && osc addremove -r 2> /dev/null || exit 0
 	cd OBS/$(OBS_WORKDIR) && osc ci -m "Makefile check-in - date($(shell date)) branch($(GIT_BRANCH))"
 	make build-clean
+
+ioncube54 ioncube55 ioncube56:
+	IONCUBE_TARGET=$@ make build-binary-target
 
 # This allows you to debug your build if it fails by logging into the
 # build environment and letting you manually run commands.
@@ -107,8 +115,9 @@ vars: check
 #-----------------------
 
 build-init: build-clean
+	$(eval OBS_WORKDIR := $(BUILD_TARGET)/$(IONCUBE_TARGET))
 	mkdir OBS
-	osc branch $(OBS_PROJECT) $(OBS_PACKAGE) $(BUILD_TARGET) $(OBS_PACKAGE) 2>/dev/null || exit 0
+	osc branch $(OBS_PROJECT) $(OBS_PACKAGE) $(BUILD_TARGET) $(IONCUBE_TARGET) 2>/dev/null || exit 0
 	cd OBS && osc co $(BUILD_TARGET)
 	mv OBS/$(OBS_WORKDIR)/.osc OBS/.osc.proj.$$ && rm -rf OBS/$(OBS_WORKDIR)/* && cp --remove-destination -pr SOURCES/* SPECS/* OBS/$(OBS_WORKDIR) && mv OBS/.osc.proj.$$ OBS/$(OBS_WORKDIR)/.osc
 

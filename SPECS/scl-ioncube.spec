@@ -3,14 +3,10 @@
 %global ns_dir /opt/cpanel
 %global _scl_prefix %ns_dir
 
-# Let's have a fallback, in case we're not called quite correctly.
-%{!?scl:%{expand:
-%global scl_name_base %{ns_name}-php
-%global scl_name_version 56
-%global scl %{scl_name_base}%{scl_name_version}
-}}
-
 %scl_package %scl
+
+# This makes the ea-php<ver>-build macro stuff work
+%scl_package_override
 
 # Starting with PHP 5.6, the IonCube loader needs to be loaded first
 %if "%{php_version}" < "5.6"

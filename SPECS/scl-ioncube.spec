@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 # Package namespaces
 %global ns_name ea
 %global ns_dir /opt/cpanel
@@ -7,6 +9,19 @@
 
 # This makes the ea-php<ver>-build macro stuff work
 %scl_package_override
+
+# OBS builds the 32-bit targets as arch 'i586', and more typical
+# 32-bit architecture is 'i386', but 32-bit archive is named 'x86'.
+# 64-bit archive is 'x86-64', rather than 'x86_64'.
+%if "%{_arch}" == "i586" || "%{_arch}" == "i386"
+%global archive_arch x86
+%else
+%if "%{_arch}" == "x86_64"
+%global archive_arch x86-64
+%else
+%global archive_arch %{_arch}
+%endif
+%endif
 
 # Starting with PHP 5.6, the IonCube loader needs to be loaded first
 %if "%{php_version}" < "5.6"
@@ -24,10 +39,10 @@ License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
 
-# We'll only do 64-bit packages, so no need for 32-bit libraries.  The
+# There is a different distribution archive per architecture.  The
 # archive contains the license file, so no need to have it as a
 # separate source file.
-Source: http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+Source: http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_%{archive_arch}.tar.gz
 
 BuildRequires: scl-utils-build
 BuildRequires: %{?scl_prefix}scldevel

@@ -1,14 +1,17 @@
 %define debug_package %{nil}
 
-# Package namespaces
-%global ns_name ea
-%global ns_dir /opt/cpanel
-%global _scl_prefix %ns_dir
+%global extension_type php
+%global upstream_name ioncube
 
-%scl_package %scl
+%{?scl:%global _scl_prefix /opt/cpanel}
+%{?scl:%scl_package %{extension_type}-%{upstream_name}}
+%{?scl:BuildRequires: scl-utils-build}
+%{?scl:Requires: %scl_runtime}
+%{!?scl:%global pkg_name %{name}}
 
-# This makes the ea-php<ver>-build macro stuff work
-%scl_package_override
+# must redefine this in the spec file because OBS doesn't know how
+# to handle macros in BuildRequires statements
+%{?scl:%global scl_prefix %{scl}-}
 
 # OBS builds the 32-bit targets as arch 'i586', and more typical
 # 32-bit architecture is 'i386', but 32-bit archive is named 'x86'.
@@ -30,14 +33,15 @@
 %global inifile 01-ioncube.ini
 %endif
 
-Name:    %{?scl_prefix}php-ioncube
+Name:    %{?scl_prefix}%{extension_type}-%{upstream_name}
 Vendor:  ionCube Ltd.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
-Release: 1%{?dist}
+Release: 3%{?dist}
 License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # There is a different distribution archive per architecture.  The
 # archive contains the license file, so no need to have it as a
@@ -89,5 +93,8 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Wed Mar 09 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-3
+- Resolve internal SCL builds optimizations with Makefiles (EA-4259)
+
 * Mon Jul 06 2015 Trinity Quirk <trinity.quirk@cpanel.net> - 4.7.5-1
 - Initial creation

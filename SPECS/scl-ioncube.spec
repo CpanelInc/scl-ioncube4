@@ -37,7 +37,7 @@ Name:    %{?scl_prefix}%{extension_type}-%{upstream_name}
 Vendor:  ionCube Ltd.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
@@ -54,6 +54,7 @@ BuildRequires: %{?scl_prefix}build
 BuildRequires: %{?scl_prefix}php-devel
 Requires:      %{?scl_prefix}php(zend-abi) = %{php_zend_api}
 Requires:      %{?scl_prefix}php(api) = %{php_core_api}
+Conflicts:     %{?scl_prefix}php-ioncube5
 
 # Don't provide extensions as shared library resources
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
@@ -93,6 +94,9 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Wed Mar 23 2016 Dan Muey <dan@cpanel.net> - 4.7.5-4
+- Add conflict for ioncube v5 in same PHP version
+
 * Wed Mar 09 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-3
 - Resolve internal SCL builds optimizations with Makefiles (EA-4259)
 

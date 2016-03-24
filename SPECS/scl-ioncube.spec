@@ -13,6 +13,9 @@
 # to handle macros in BuildRequires statements
 %{?scl:%global scl_prefix %{scl}-}
 
+# Use this to get access to %{php_version} macro
+%scl_package_override
+
 # OBS builds the 32-bit targets as arch 'i586', and more typical
 # 32-bit architecture is 'i386', but 32-bit archive is named 'x86'.
 # 64-bit archive is 'x86-64', rather than 'x86_64'.
@@ -37,7 +40,7 @@ Name:    %{?scl_prefix}%{extension_type}-%{upstream_name}
 Vendor:  ionCube Ltd.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
@@ -94,6 +97,10 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Thu Mar 24 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-5
+- Added scl_package_override macro to regain access to global
+  PHP macros that contain location and verison information.
+
 * Wed Mar 23 2016 Dan Muey <dan@cpanel.net> - 4.7.5-4
 - Add conflict for ioncube v5 in same PHP version
 

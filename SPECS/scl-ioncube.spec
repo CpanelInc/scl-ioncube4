@@ -1,13 +1,19 @@
 %define debug_package %{nil}
 
-# Package namespaces
-%global ns_name ea
-%global ns_dir /opt/cpanel
-%global _scl_prefix %ns_dir
+%global extension_type php
+%global upstream_name ioncube
 
-%scl_package %scl
+%{?scl:%global _scl_prefix /opt/cpanel}
+%{?scl:%scl_package %{extension_type}-%{upstream_name}}
+%{?scl:BuildRequires: scl-utils-build}
+%{?scl:Requires: %scl_runtime}
+%{!?scl:%global pkg_name %{name}}
 
-# This makes the ea-php<ver>-build macro stuff work
+# must redefine this in the spec file because OBS doesn't know how
+# to handle macros in BuildRequires statements
+%{?scl:%global scl_prefix %{scl}-}
+
+# Use this to get access to %{php_version} macro
 %scl_package_override
 
 # OBS builds the 32-bit targets as arch 'i586', and more typical
@@ -30,14 +36,15 @@
 %global inifile 01-ioncube.ini
 %endif
 
-Name:    %{?scl_prefix}php-ioncube
+Name:    %{?scl_prefix}%{extension_type}-%{upstream_name}
 Vendor:  ionCube Ltd.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
-Release: 1%{?dist}
+Release: 5%{?dist}
 License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # There is a different distribution archive per architecture.  The
 # archive contains the license file, so no need to have it as a
@@ -50,6 +57,7 @@ BuildRequires: %{?scl_prefix}build
 BuildRequires: %{?scl_prefix}php-devel
 Requires:      %{?scl_prefix}php(zend-abi) = %{php_zend_api}
 Requires:      %{?scl_prefix}php(api) = %{php_core_api}
+Conflicts:     %{?scl_prefix}php-ioncube5
 
 # Don't provide extensions as shared library resources
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
@@ -89,5 +97,15 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Thu Mar 24 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-5
+- Added scl_package_override macro to regain access to global
+  PHP macros that contain location and verison information.
+
+* Wed Mar 23 2016 Dan Muey <dan@cpanel.net> - 4.7.5-4
+- Add conflict for ioncube v5 in same PHP version
+
+* Wed Mar 09 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-3
+- Resolve internal SCL builds optimizations with Makefiles (EA-4259)
+
 * Mon Jul 06 2015 Trinity Quirk <trinity.quirk@cpanel.net> - 4.7.5-1
 - Initial creation

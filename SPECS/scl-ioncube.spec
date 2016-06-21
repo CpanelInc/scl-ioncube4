@@ -40,7 +40,9 @@ Name:    %{?scl_prefix}%{extension_type}-%{upstream_name}
 Vendor:  ionCube Ltd.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
-Release: 5%{?dist}
+# Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4570 for more details
+%define release_prefix 6
+Release: %{release_prefix}%{?dist}.cpanel
 License: Redistributable
 Group:   Development/Languages
 URL:     http://www.ioncube.com/loaders.php
@@ -97,6 +99,9 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Mon Jun 20 2016 Dan Muey <dan@cpanel.net> - 4.7.5-6
+- EA-4383: Update Release value to OBS-proof versioning
+
 * Thu Mar 24 2016 S. Kurt Newman <kurt.newman@cpanel.net> - 4.7.5-5
 - Added scl_package_override macro to regain access to global
   PHP macros that contain location and verison information.

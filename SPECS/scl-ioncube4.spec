@@ -41,7 +41,7 @@ Vendor:  cPanel, Inc.
 Summary: Loader for ionCube-encoded PHP files
 Version: 4.7.5
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4570 for more details
-%define release_prefix 9
+%define release_prefix 10
 Release: %{release_prefix}%{?dist}.cpanel
 License: Redistributable
 Group:   Development/Languages
@@ -102,6 +102,9 @@ EOF
 %{php_extdir}/ioncube_loader_lin_%{php_version}.so
 
 %changelog
+* Tue Dec 28 2021 Dan Muey <dan@cpanel.net> - 4.7.5-10
+- ZC-9589: Update DISABLE_BUILD to match OBS
+
 * Fri Dec 16 2016 Jacob Perkins <jacob.perkins@cpanel.net> - 4.7.5-9
 - EA-5493: Added vendor field
 
